@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/child.dart';
-import 'icon_select_screen.dart';
+import 'icon_select_screen.dart' show IconSelectScreen, IconSelectResult;
 import '../widgets/app_data_scope.dart';
 import '../widgets/avatar_widget.dart';
 
@@ -60,16 +60,16 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
   }
 
   Future<void> _openIconSelect() async {
-    final savedPath = await Navigator.push<String>(
+    final result = await Navigator.push<IconSelectResult>(
       context,
       MaterialPageRoute(
         builder: (_) => IconSelectScreen(childId: _childId),
       ),
     );
-    if (savedPath != null) {
+    if (result != null) {
       setState(() {
-        _iconImagePath = savedPath;
-        _iconType = IconType.gallery;
+        _iconImagePath = result.path;
+        _iconType = result.iconType;
       });
     }
   }

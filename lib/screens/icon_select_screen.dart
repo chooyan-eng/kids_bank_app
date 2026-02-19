@@ -5,13 +5,18 @@ import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../models/child.dart';
 import '../services/image_picker_channel.dart';
+import 'drawing_canvas_screen.dart';
+
+/// Result returned by [IconSelectScreen] to the caller.
+typedef IconSelectResult = ({String path, IconType iconType});
 
 /// S04: Icon selection screen.
 /// Shown when the user taps the avatar in [ChildEditScreen].
 ///
 /// [childId] is used to derive the save path for the icon image.
-/// Returns the saved file path (String) via Navigator.pop, or null if cancelled.
+/// Returns [IconSelectResult] via Navigator.pop, or null if cancelled.
 class IconSelectScreen extends StatelessWidget {
   final String childId;
 
@@ -33,11 +38,10 @@ class IconSelectScreen extends StatelessWidget {
               onTap: () => _pickFromGallery(context),
             ),
             const SizedBox(height: 16),
-            const _OptionCard(
+            _OptionCard(
               icon: Icons.draw_outlined,
               label: '手書きで描く',
-              enabled: false,
-              onTap: null,
+              onTap: () => _drawIcon(context),
             ),
           ],
         ),
@@ -62,7 +66,23 @@ class IconSelectScreen extends StatelessWidget {
     final filePath = await _savePng(croppedBytes);
     if (!context.mounted) return;
 
-    Navigator.of(context).pop(filePath);
+    Navigator.of(context)
+        .pop((path: filePath, iconType: IconType.gallery) as IconSelectResult);
+  }
+
+  Future<void> _drawIcon(BuildContext context) async {
+    final filePath = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DrawingCanvasScreen(childId: childId),
+      ),
+    );
+
+    if (filePath == null) return;
+    if (!context.mounted) return;
+
+    Navigator.of(context)
+        .pop((path: filePath, iconType: IconType.drawing) as IconSelectResult);
   }
 
   Future<String> _savePng(Uint8List bytes) async {
