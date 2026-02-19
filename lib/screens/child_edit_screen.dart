@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/child.dart';
+import 'icon_select_screen.dart';
 import '../widgets/app_data_scope.dart';
 import '../widgets/avatar_widget.dart';
 
@@ -24,17 +25,29 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
   final _rateController = TextEditingController();
   bool _isSaving = false;
 
+  // Generated once in initState so new children can also get an icon path.
+  late final String _childId;
+
+  // Icon state updated after returning from IconSelectScreen.
+  String? _iconImagePath;
+  IconType? _iconType;
+
   bool get _isEditing => widget.child != null;
 
   @override
   void initState() {
     super.initState();
     if (_isEditing) {
-      _nameController.text = widget.child!.name;
-      _rateController.text = widget.child!.interestRatePercent
+      final child = widget.child!;
+      _childId = child.id;
+      _nameController.text = child.name;
+      _rateController.text = child.interestRatePercent
           .toStringAsFixed(1)
           .replaceAll(RegExp(r'\.0$'), '.0');
+      _iconImagePath = child.iconImagePath;
+      _iconType = child.iconType;
     } else {
+      _childId = _uuid.v4();
       _rateController.text = '0.0';
     }
   }
@@ -44,6 +57,21 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
     _nameController.dispose();
     _rateController.dispose();
     super.dispose();
+  }
+
+  Future<void> _openIconSelect() async {
+    final savedPath = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => IconSelectScreen(childId: _childId),
+      ),
+    );
+    if (savedPath != null) {
+      setState(() {
+        _iconImagePath = savedPath;
+        _iconType = IconType.gallery;
+      });
+    }
   }
 
   Future<void> _save() async {
@@ -59,13 +87,17 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
       final updated = widget.child!.copyWith(
         name: name,
         interestRatePercent: rate,
+        iconType: _iconType,
+        iconImagePath: _iconImagePath,
       );
       await scope.updateChild(updated);
     } else {
       final now = DateTime.now();
       final newChild = Child(
-        id: _uuid.v4(),
+        id: _childId,
         name: name,
+        iconType: _iconType,
+        iconImagePath: _iconImagePath,
         interestRatePercent: rate,
         balance: 0.0,
         createdAt: now,
@@ -78,16 +110,17 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Build a preview child so the avatar reflects the current name input.
+    // Build a preview child reflecting the current name and icon selections.
     final previewName = _nameController.text.trim();
-    final previewChild = widget.child?.copyWith(name: previewName) ??
-        Child(
-          id: '',
-          name: previewName,
-          interestRatePercent: 0,
-          balance: 0,
-          createdAt: DateTime.now(),
-        );
+    final previewChild = Child(
+      id: _childId,
+      name: previewName,
+      iconType: _iconType,
+      iconImagePath: _iconImagePath,
+      interestRatePercent: 0,
+      balance: 0,
+      createdAt: DateTime.now(),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -100,11 +133,28 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Avatar preview — tapping is a no-op in Phase 1
+              // Avatar preview — tap to open icon selection
               Center(
-                child: Tooltip(
-                  message: 'Phase 2 でアイコン設定が可能になります',
-                  child: AvatarWidget(child: previewChild, radius: 48),
+                child: GestureDetector(
+                  onTap: _openIconSelect,
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      AvatarWidget(child: previewChild, radius: 48),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.edit,
+                          size: 16,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
