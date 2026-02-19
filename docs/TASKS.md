@@ -1,6 +1,6 @@
 # TASKS.md — こどもぎんこう タスク一覧
 
-最終更新: 2026-02-19（T02〜T04 完了マーク更新）
+最終更新: 2026-02-19（T08 完了マーク更新）
 
 凡例: ⬜ 未着手 / 🔄 作業中 / ✅ 完了
 
@@ -112,8 +112,8 @@ abstract class AppRepository {
 
 | # | タスク | 詳細 |
 |---|---|---|
-| T08-1 | ⬜ `database.dart` | `openDatabase()` でDBを開く。`onCreate` で `children` / `transactions` テーブルを作成（TECH_NOTES.md のDDL参照）。`onUpgrade` のスケルトンを用意 |
-| T08-2 | ⬜ `sqlite_repository.dart` | `AppRepository` を SQLite で実装。`loadChildren`, `saveChild`, `updateChild`, `deleteChild`, `loadTransactions`, `saveTransaction`, `updateChildBalance` をすべて実装 |
+| T08-1 | ✅ `database.dart` | `openDatabase()` でDBを開く。`onCreate` で `children` / `transactions` テーブルを作成（TECH_NOTES.md のDDL参照）。`onUpgrade` のスケルトンを用意 |
+| T08-2 | ✅ `sqlite_repository.dart` | `AppRepository` を SQLite で実装。`loadChildren`, `saveChild`, `updateChild`, `deleteChild`, `loadTransactions`, `saveTransaction`, `updateChildBalance` をすべて実装 |
 
 ---
 
