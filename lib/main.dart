@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'db/dummy_repository.dart';
+import 'screens/home_screen.dart';
 import 'widgets/app_data_scope.dart';
 
 void main() {
@@ -23,11 +24,7 @@ class MainApp extends StatelessWidget {
             brightness: Brightness.light,
           ),
         ),
-        home: const Scaffold(
-          body: Center(
-            child: Text('こどもぎんこう'),
-          ),
-        ),
+        home: const HomeScreen(),
       ),
     );
   }
