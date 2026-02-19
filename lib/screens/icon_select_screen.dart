@@ -71,6 +71,10 @@ class IconSelectScreen extends StatelessWidget {
     if (croppedBytes == null) return;
 
     final filePath = await _savePng(croppedBytes);
+
+    // Evict the old cached image so the updated file is reloaded on next display.
+    imageCache.evict(FileImage(File(filePath)));
+
     if (!context.mounted) return;
 
     Navigator.of(context)
