@@ -1,6 +1,6 @@
 # TASKS.md — こどもぎんこう タスク一覧
 
-最終更新: 2026-02-19
+最終更新: 2026-02-19（T02〜T04 完了マーク更新）
 
 凡例: ⬜ 未着手 / 🔄 作業中 / ✅ 完了
 
@@ -22,9 +22,9 @@
 
 | # | タスク | 詳細 |
 |---|---|---|
-| T02-1 | ⬜ `transaction_type.dart` | `enum TransactionType { deposit, withdrawal, interest }` |
-| T02-2 | ⬜ `child.dart` | Child クラス。フィールド・`fromMap` / `toMap` / `copyWith` を実装 |
-| T02-3 | ⬜ `transaction.dart` | Transaction クラス。フィールド・`fromMap` / `toMap` を実装 |
+| T02-1 | ✅ `transaction_type.dart` | `enum TransactionType { deposit, withdrawal, interest }` |
+| T02-2 | ✅ `child.dart` | Child クラス。フィールド・`fromMap` / `toMap` / `copyWith` を実装 |
+| T02-3 | ✅ `transaction.dart` | Transaction クラス。フィールド・`fromMap` / `toMap` を実装 |
 
 ---
 
@@ -32,7 +32,7 @@
 
 | # | タスク | 詳細 |
 |---|---|---|
-| T03-1 | ⬜ `app_repository.dart` | abstract class `AppRepository` を定義。下記メソッドを宣言する |
+| T03-1 | ✅ `app_repository.dart` | abstract class `AppRepository` を定義。下記メソッドを宣言する |
 
 ```dart
 abstract class AppRepository {
@@ -59,7 +59,7 @@ abstract class AppRepository {
 
 | # | タスク | 詳細 |
 |---|---|---|
-| T04-1 | ⬜ `dummy_repository.dart` | `AppRepository` を実装。ハードコードのダミーデータを返すインメモリ実装 |
+| T04-1 | ✅ `dummy_repository.dart` | `AppRepository` を実装。ハードコードのダミーデータを返すインメモリ実装 |
 
 ダミーデータの内容（例）:
 - 子ども 2 人（名前・残高・利率あり）
