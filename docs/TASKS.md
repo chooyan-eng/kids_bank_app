@@ -1,6 +1,6 @@
 # TASKS.md — こどもぎんこう タスク一覧
 
-最終更新: 2026-02-19（T08 完了マーク更新）
+最終更新: 2026-02-19（T10 完了マーク更新）
 
 凡例: ⬜ 未着手 / 🔄 作業中 / ✅ 完了
 
@@ -71,7 +71,7 @@ abstract class AppRepository {
 
 | # | タスク | 詳細 |
 |---|---|---|
-| T05-1 | ⬜ `app_data_scope.dart` | `AppDataScope` を実装（下記仕様） |
+| T05-1 | ✅ `app_data_scope.dart` | `AppDataScope` を実装（下記仕様） |
 
 `AppDataScope` の仕様:
 - `AppRepository` を注入して保持する（DI）
@@ -89,7 +89,7 @@ abstract class AppRepository {
 
 | # | タスク | 詳細 |
 |---|---|---|
-| T06-1 | ⬜ `main.dart` を書き換え | `AppDataScope`（DummyRepository を注入）をルートに配置。`MaterialApp` に Material 3 テーマ（暖色系 ColorScheme）を設定 |
+| T06-1 | ✅ `main.dart` を書き換え | `AppDataScope`（DummyRepository を注入）をルートに配置。`MaterialApp` に Material 3 テーマ（暖色系 ColorScheme）を設定 |
 
 ---
 
@@ -99,12 +99,12 @@ abstract class AppRepository {
 
 | # | タスク | 画面/ウィジェット | 主な実装内容 |
 |---|---|---|---|
-| T07-1 | ⬜ `avatar_widget.dart` | 共通 | 名前の頭文字を円形に表示するウィジェット |
-| T07-2 | ⬜ `child_card.dart` | S01 用 | アイコン・名前・残高・利率・「入金」「出金」ボタンを持つカード |
-| T07-3 | ⬜ `home_screen.dart` | S01 | カード一覧（ListView）、FAB（子ども追加）、空状態の案内 |
-| T07-4 | ⬜ `transaction_dialog.dart` | D01 | 入金/出金セグメント・金額・日付・メモ入力。「確定」で `addTransaction()` を呼ぶ |
-| T07-5 | ⬜ `child_detail_screen.dart` | S02 | ヘッダー（残高・利率）・取引履歴リスト（月ヘッダー区切り）・入金/出金ボタン・編集/削除メニュー |
-| T07-6 | ⬜ `child_edit_screen.dart` | S03 | 名前・利率フォーム。新規追加と編集を兼用。「保存」で `addChild()` / `updateChild()` を呼ぶ |
+| T07-1 | ✅ `avatar_widget.dart` | 共通 | 名前の頭文字を円形に表示するウィジェット |
+| T07-2 | ✅ `child_card.dart` | S01 用 | アイコン・名前・残高・利率・「入金」「出金」ボタンを持つカード |
+| T07-3 | ✅ `home_screen.dart` | S01 | カード一覧（ListView）、FAB（子ども追加）、空状態の案内 |
+| T07-4 | ✅ `transaction_dialog.dart` | D01 | 入金/出金セグメント・金額・日付・メモ入力。「確定」で `addTransaction()` を呼ぶ |
+| T07-5 | ✅ `child_detail_screen.dart` | S02 | ヘッダー（残高・利率）・取引履歴リスト（月ヘッダー区切り）・入金/出金ボタン・編集/削除メニュー |
+| T07-6 | ✅ `child_edit_screen.dart` | S03 | 名前・利率フォーム。新規追加と編集を兼用。「保存」で `addChild()` / `updateChild()` を呼ぶ |
 
 ---
 
@@ -121,8 +121,8 @@ abstract class AppRepository {
 
 | # | タスク | 詳細 |
 |---|---|---|
-| T09-1 | ⬜ `main.dart` を更新 | `DummyRepository` → `SqliteRepository` に差し替え |
-| T09-2 | ⬜ 起動時データロード | `AppDataScope` の初期化時に `loadChildren()` を呼び、全子どものデータをステートに読み込む |
+| T09-1 | ✅ `main.dart` を更新 | `DummyRepository` → `SqliteRepository` に差し替え |
+| T09-2 | ✅ 起動時データロード | `AppDataScope` の初期化時に `loadChildren()` を呼び、全子どものデータをステートに読み込む |
 
 ---
 
@@ -130,8 +130,8 @@ abstract class AppRepository {
 
 | # | タスク | 詳細 |
 |---|---|---|
-| T10-1 | ⬜ `home_screen.dart` の `initState` | 起動時に全子どもに対して `checkAndApplyInterest()` を呼ぶ |
-| T10-2 | ⬜ `child_detail_screen.dart` の `initState` | 詳細画面を開いたタイミングでも `checkAndApplyInterest()` を呼ぶ |
+| T10-1 | ✅ `home_screen.dart` の `initState` | 起動時に全子どもに対して `checkAndApplyInterest()` を呼ぶ |
+| T10-2 | ✅ `child_detail_screen.dart` の `initState` | 詳細画面を開いたタイミングでも `checkAndApplyInterest()` を呼ぶ |
 
 ---
 
