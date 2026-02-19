@@ -156,8 +156,12 @@ class _ImageCropScreenState extends State<_ImageCropScreen> {
         image: widget.imageBytes,
         controller: _cropController,
         aspectRatio: 1.0,
-        onCropped: (croppedImage) {
-          Navigator.of(context).pop(croppedImage);
+        onCropped: (result) {
+          if (result is CropSuccess) {
+            Navigator.of(context).pop(result.croppedImage);
+          } else {
+            Navigator.of(context).pop();
+          }
         },
       ),
     );
