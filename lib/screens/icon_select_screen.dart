@@ -139,12 +139,6 @@ class _ImageCropScreen extends StatefulWidget {
 
 class _ImageCropScreenState extends State<_ImageCropScreen> {
   final _cropController = CropController();
-  bool _isCropping = false;
-
-  void _confirmCrop() {
-    setState(() => _isCropping = true);
-    _cropController.crop();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,14 +147,8 @@ class _ImageCropScreenState extends State<_ImageCropScreen> {
         title: const Text('切り取り'),
         actions: [
           TextButton(
-            onPressed: _isCropping ? null : _confirmCrop,
-            child: _isCropping
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('完了'),
+            onPressed: _cropController.crop,
+            child: const Text('完了'),
           ),
         ],
       ),
@@ -168,15 +156,8 @@ class _ImageCropScreenState extends State<_ImageCropScreen> {
         image: widget.imageBytes,
         controller: _cropController,
         aspectRatio: 1.0,
-        onCropped: (result) {
-          if (result is CropSuccess) {
-            Navigator.of(context).pop(result.croppedImage);
-          } else {
-            setState(() => _isCropping = false);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('切り取りに失敗しました')),
-            );
-          }
+        onCropped: (croppedImage) {
+          Navigator.of(context).pop(croppedImage);
         },
       ),
     );

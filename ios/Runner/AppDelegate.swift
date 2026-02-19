@@ -16,7 +16,9 @@ import UIKit
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
 
-    let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "ImagePickerPlugin")
+    guard let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "ImagePickerPlugin") else {
+      return
+    }
     let channel = FlutterMethodChannel(
       name: "com.kids_bank_app/image_picker",
       binaryMessenger: registrar.messenger()
