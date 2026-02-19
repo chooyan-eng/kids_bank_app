@@ -39,7 +39,7 @@ class AppDataScopeState extends State<AppDataScope> {
   /// Read-only view of cached transactions, keyed by child ID.
   Map<String, List<Transaction>> get transactions =>
       Map.unmodifiable(_transactions.map(
-        (k, v) => MapEntry(k, List.unmodifiable(v)),
+        (k, v) => MapEntry(k, List<Transaction>.unmodifiable(v)),
       ));
 
   static const _uuid = Uuid();

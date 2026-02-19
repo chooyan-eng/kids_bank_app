@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'db/dummy_repository.dart';
 import 'screens/home_screen.dart';
 import 'widgets/app_data_scope.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('ja');
   runApp(const MainApp());
 }
 
