@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:intl/intl.dart';
 
 import '../models/child.dart';
@@ -43,22 +43,85 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
   Future<void> _showDeleteDialog(Child child) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('削除の確認'),
-        content: Text('「${child.name}」のデータをすべて削除しますか？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('キャンセル'),
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Neumorphic(
+          style: NeumorphicStyle(
+            depth: 10,
+            color: NeumorphicTheme.baseColor(ctx),
+            boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(24)),
           ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
+          child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  '削除の確認',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF3D3D3D),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  '「${child.name}」のデータをすべて削除しますか？',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Color(0xFF5D5D5D),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 28),
+                Row(
+                  children: [
+                    Expanded(
+                      child: NeumorphicButton(
+                        style: NeumorphicStyle(
+                          depth: 4,
+                          boxShape: NeumorphicBoxShape.roundRect(
+                              BorderRadius.circular(12)),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: const Center(
+                          child: Text(
+                            'キャンセル',
+                            style: TextStyle(color: Color(0xFF5D5D5D)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: NeumorphicButton(
+                        style: NeumorphicStyle(
+                          depth: 4,
+                          color: const Color(0xFFFFCDD2),
+                          boxShape: NeumorphicBoxShape.roundRect(
+                              BorderRadius.circular(12)),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: const Center(
+                          child: Text(
+                            '削除',
+                            style: TextStyle(
+                              color: Color(0xFFB71C1C),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('削除'),
           ),
-        ],
+        ),
       ),
     );
 
@@ -72,6 +135,7 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
   Widget build(BuildContext context) {
     final scope = AppDataScope.of(context);
     final child = _currentChild(scope);
+    final baseColor = NeumorphicTheme.baseColor(context);
 
     final transactions = List<Transaction>.from(
       scope.transactions[child.id] ?? [],
@@ -84,7 +148,6 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
     );
     final monthFormat = DateFormat('yyyy年M月', 'ja');
     final dayFormat = DateFormat('M月d日', 'ja');
-    final theme = Theme.of(context);
 
     // Build a flat list of month-header strings and Transaction objects.
     final List<Object> items = [];
@@ -99,190 +162,339 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(child.name),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) async {
-              if (value == 'edit') {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChildEditScreen(child: child),
-                  ),
-                );
-              } else if (value == 'delete') {
-                await _showDeleteDialog(child);
-              }
-            },
-            itemBuilder: (_) => [
-              const PopupMenuItem(value: 'edit', child: Text('編集')),
-              PopupMenuItem(
-                value: 'delete',
-                child: Text(
-                  '削除',
-                  style: TextStyle(color: theme.colorScheme.error),
-                ),
-              ),
-            ],
+      backgroundColor: baseColor,
+      appBar: NeumorphicAppBar(
+        title: Text(
+          child.name,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Color(0xFF3D3D3D),
           ),
+        ),
+        actions: [
+          NeumorphicButton(
+            style: const NeumorphicStyle(
+              boxShape: NeumorphicBoxShape.circle(),
+              depth: 3,
+            ),
+            padding: const EdgeInsets.all(8),
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChildEditScreen(child: child),
+                ),
+              );
+            },
+            child: const Icon(
+              Icons.edit_outlined,
+              size: 20,
+              color: Color(0xFF3D3D3D),
+            ),
+          ),
+          const SizedBox(width: 6),
+          NeumorphicButton(
+            style: const NeumorphicStyle(
+              boxShape: NeumorphicBoxShape.circle(),
+              depth: 3,
+            ),
+            padding: const EdgeInsets.all(8),
+            onPressed: () => _showDeleteDialog(child),
+            child: const Icon(
+              Icons.delete_outline,
+              size: 20,
+              color: Color(0xFFE53935),
+            ),
+          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: CustomScrollView(
         slivers: [
-          // Header: avatar, balance, interest rate, action buttons
+          // Header card with balance, rate, and action buttons
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
-              child: Column(
-                children: [
-                  AvatarWidget(child: child, radius: 40),
-                  const SizedBox(height: 12),
-                  Text(
-                    yenFormat.format(child.balance),
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: child.balance >= 0
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.error,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '年利 ${child.interestRatePercent}%',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.outline,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+              child: Neumorphic(
+                style: NeumorphicStyle(
+                  depth: 6,
+                  boxShape: NeumorphicBoxShape.roundRect(
+                      BorderRadius.circular(24)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(28),
+                  child: Column(
                     children: [
-                      FilledButton.icon(
-                        onPressed: () => showDialog(
-                          context: context,
-                          builder: (_) => TransactionDialog(
-                            child: child,
-                            initialIsDeposit: true,
-                          ),
+                      AvatarWidget(child: child, radius: 44),
+                      const SizedBox(height: 16),
+                      Text(
+                        yenFormat.format(child.balance),
+                        style: TextStyle(
+                          fontSize: 42,
+                          fontWeight: FontWeight.bold,
+                          color: child.balance >= 0
+                              ? const Color(0xFF2E7D32)
+                              : const Color(0xFFE53935),
                         ),
-                        icon: const Icon(Icons.add),
-                        label: const Text('入金'),
                       ),
-                      const SizedBox(width: 12),
-                      OutlinedButton.icon(
-                        onPressed: () => showDialog(
-                          context: context,
-                          builder: (_) => TransactionDialog(
-                            child: child,
-                            initialIsDeposit: false,
-                          ),
+                      const SizedBox(height: 6),
+                      Text(
+                        '年利 ${child.interestRatePercent}%',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF8E8E8E),
                         ),
-                        icon: const Icon(Icons.remove),
-                        label: const Text('出金'),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          NeumorphicButton(
+                            style: NeumorphicStyle(
+                              depth: 5,
+                              color: const Color(0xFFA5D6A7),
+                              boxShape: NeumorphicBoxShape.roundRect(
+                                  BorderRadius.circular(14)),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 14),
+                            onPressed: () => showDialog(
+                              context: context,
+                              builder: (_) => TransactionDialog(
+                                child: child,
+                                initialIsDeposit: true,
+                              ),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.add,
+                                    size: 18, color: Color(0xFF1B5E20)),
+                                SizedBox(width: 6),
+                                Text(
+                                  '入金',
+                                  style: TextStyle(
+                                    color: Color(0xFF1B5E20),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          NeumorphicButton(
+                            style: NeumorphicStyle(
+                              depth: 5,
+                              color: const Color(0xFFFFCDD2),
+                              boxShape: NeumorphicBoxShape.roundRect(
+                                  BorderRadius.circular(14)),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 14),
+                            onPressed: () => showDialog(
+                              context: context,
+                              builder: (_) => TransactionDialog(
+                                child: child,
+                                initialIsDeposit: false,
+                              ),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.remove,
+                                    size: 18, color: Color(0xFFB71C1C)),
+                                SizedBox(width: 6),
+                                Text(
+                                  '出金',
+                                  style: TextStyle(
+                                    color: Color(0xFFB71C1C),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  const Divider(),
-                ],
+                ),
+              ),
+            ),
+          ),
+
+          // Section label
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 28, 20, 8),
+              child: Text(
+                '取引履歴',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF5D5D5D),
+                ),
               ),
             ),
           ),
 
           // Empty state
           if (items.isEmpty)
-            SliverToBoxAdapter(
+            const SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(40),
+                padding: EdgeInsets.all(40),
                 child: Center(
                   child: Text(
                     'まだ取引がありません',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.outline,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Color(0xFF8E8E8E)),
                   ),
                 ),
               ),
             ),
 
           // Transaction list with month headers
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final item = items[index];
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final item = items[index];
 
-                if (item is String) {
                   // Month section header
+                  if (item is String) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 16, bottom: 8),
+                      child: Text(
+                        item,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF8E8E8E),
+                        ),
+                      ),
+                    );
+                  }
+
+                  final tx = item as Transaction;
+                  final (iconData, iconColor, bgColor) = switch (tx.type) {
+                    TransactionType.deposit => (
+                        Icons.arrow_downward,
+                        const Color(0xFF2E7D32),
+                        const Color(0xFFC8E6C9),
+                      ),
+                    TransactionType.withdrawal => (
+                        Icons.arrow_upward,
+                        const Color(0xFFB71C1C),
+                        const Color(0xFFFFCDD2),
+                      ),
+                    TransactionType.interest => (
+                        Icons.star,
+                        const Color(0xFF7B4F00),
+                        const Color(0xFFFFE0B2),
+                      ),
+                  };
+
+                  final amountSign =
+                      tx.type == TransactionType.withdrawal ? '−' : '＋';
+                  final label = tx.memo.isNotEmpty
+                      ? tx.memo
+                      : switch (tx.type) {
+                          TransactionType.deposit => '入金',
+                          TransactionType.withdrawal => '出金',
+                          TransactionType.interest => '利息',
+                        };
+
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-                    child: Text(
-                      item,
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: theme.colorScheme.secondary,
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Neumorphic(
+                      style: NeumorphicStyle(
+                        depth: 3,
+                        boxShape: NeumorphicBoxShape.roundRect(
+                            BorderRadius.circular(16)),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        child: Row(
+                          children: [
+                            Neumorphic(
+                              style: NeumorphicStyle(
+                                depth: 2,
+                                color: bgColor,
+                                boxShape: NeumorphicBoxShape.circle(),
+                              ),
+                              child: SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: Center(
+                                  child: Icon(iconData,
+                                      color: iconColor, size: 20),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    label,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                      color: Color(0xFF3D3D3D),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    dayFormat.format(tx.date),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF8E8E8E),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '$amountSign${yenFormat.format(tx.amount)}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color:
+                                        tx.type == TransactionType.withdrawal
+                                            ? const Color(0xFFB71C1C)
+                                            : const Color(0xFF2E7D32),
+                                  ),
+                                ),
+                                Text(
+                                  yenFormat.format(tx.balanceAfter),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFF8E8E8E),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
-                }
-
-                final tx = item as Transaction;
-                final (icon, color) = switch (tx.type) {
-                  TransactionType.deposit => (
-                      Icons.arrow_downward,
-                      Colors.green
-                    ),
-                  TransactionType.withdrawal => (
-                      Icons.arrow_upward,
-                      Colors.red
-                    ),
-                  TransactionType.interest => (Icons.star, Colors.amber),
-                };
-
-                final amountSign =
-                    tx.type == TransactionType.withdrawal ? '−' : '＋';
-
-                final label = tx.memo.isNotEmpty
-                    ? tx.memo
-                    : switch (tx.type) {
-                        TransactionType.deposit => '入金',
-                        TransactionType.withdrawal => '出金',
-                        TransactionType.interest => '利息',
-                      };
-
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: color.withOpacity(0.15),
-                    child: Icon(icon, color: color, size: 20),
-                  ),
-                  title: Text(label),
-                  subtitle: Text(dayFormat.format(tx.date)),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        '$amountSign${yenFormat.format(tx.amount)}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: tx.type == TransactionType.withdrawal
-                              ? Colors.red
-                              : Colors.green,
-                        ),
-                      ),
-                      Text(
-                        yenFormat.format(tx.balanceAfter),
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                );
-              },
-              childCount: items.length,
+                },
+                childCount: items.length,
+              ),
             ),
           ),
 
           // Bottom padding
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 
 import '../widgets/app_data_scope.dart';
 import '../widgets/child_card.dart';
@@ -38,35 +38,38 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final scope = AppDataScope.of(context);
     final children = scope.children;
+    final baseColor = NeumorphicTheme.baseColor(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('こどもぎんこう'),
+      backgroundColor: baseColor,
+      appBar: NeumorphicAppBar(
+        title: const Text(
+          'こどもぎんこう',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Color(0xFF3D3D3D),
+          ),
+        ),
         centerTitle: true,
         actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) {
-              if (value == 'add_child') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ChildEditScreen()),
-                );
-              }
-            },
-            itemBuilder: (_) => const [
-              PopupMenuItem(
-                value: 'add_child',
-                child: Row(
-                  children: [
-                    Icon(Icons.person_add_outlined),
-                    SizedBox(width: 12),
-                    Text('子どもを追加'),
-                  ],
-                ),
-              ),
-            ],
+          NeumorphicButton(
+            style: const NeumorphicStyle(
+              boxShape: NeumorphicBoxShape.circle(),
+              depth: 4,
+            ),
+            padding: const EdgeInsets.all(10),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ChildEditScreen()),
+            ),
+            child: const Icon(
+              Icons.person_add_outlined,
+              color: Color(0xFF3D3D3D),
+              size: 22,
+            ),
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: children.isEmpty
@@ -74,33 +77,64 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.child_care,
-                    size: 80,
-                    color: Theme.of(context).colorScheme.outline,
+                  Neumorphic(
+                    style: const NeumorphicStyle(
+                      boxShape: NeumorphicBoxShape.circle(),
+                      depth: 6,
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(28),
+                      child: Icon(
+                        Icons.child_care,
+                        size: 56,
+                        color: Color(0xFF8E8E8E),
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
+                  const SizedBox(height: 28),
+                  const Text(
                     '最初の子どもを追加しよう！',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF8E8E8E),
+                    ),
                   ),
-                  const SizedBox(height: 24),
-                  FilledButton.icon(
+                  const SizedBox(height: 28),
+                  NeumorphicButton(
+                    style: NeumorphicStyle(
+                      depth: 5,
+                      color: const Color(0xFFFFB74D),
+                      boxShape: NeumorphicBoxShape.roundRect(
+                          BorderRadius.circular(16)),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (_) => const ChildEditScreen()),
                     ),
-                    icon: const Icon(Icons.add),
-                    label: const Text('追加する'),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add, color: Color(0xFF7B4F00)),
+                        SizedBox(width: 8),
+                        Text(
+                          '追加する',
+                          style: TextStyle(
+                            color: Color(0xFF7B4F00),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             )
           : ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               itemCount: children.length,
               itemBuilder: (context, index) {
                 final child = children[index];

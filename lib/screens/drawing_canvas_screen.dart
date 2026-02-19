@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:draw_your_image/draw_your_image.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -83,30 +83,69 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final baseColor = NeumorphicTheme.baseColor(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('手書きアイコン'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.undo),
-            onPressed: _undoStack.isEmpty ? null : _undo,
-            tooltip: '元に戻す',
+      backgroundColor: baseColor,
+      appBar: NeumorphicAppBar(
+        title: const Text(
+          '手書きアイコン',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Color(0xFF3D3D3D),
           ),
+        ),
+        actions: [
+          NeumorphicButton(
+            style: const NeumorphicStyle(
+              boxShape: NeumorphicBoxShape.circle(),
+              depth: 3,
+            ),
+            padding: const EdgeInsets.all(8),
+            onPressed: _undoStack.isEmpty ? null : _undo,
+            child: Icon(
+              Icons.undo,
+              size: 22,
+              color: _undoStack.isEmpty
+                  ? const Color(0xFFBDBDBD)
+                  : const Color(0xFF3D3D3D),
+            ),
+          ),
+          const SizedBox(width: 6),
           _isSaving
-              ? const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: const Color(0xFF7B4F00),
+                      ),
+                    ),
                   ),
                 )
-              : TextButton(
+              : NeumorphicButton(
+                  style: NeumorphicStyle(
+                    depth: 4,
+                    color: const Color(0xFFFFB74D),
+                    boxShape: NeumorphicBoxShape.roundRect(
+                        BorderRadius.circular(10)),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   onPressed: _complete,
-                  child: const Text('完了'),
+                  child: const Text(
+                    '完了',
+                    style: TextStyle(
+                      color: Color(0xFF7B4F00),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Column(
@@ -114,127 +153,151 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
           // Square canvas that fills the available width
           Expanded(
             child: Center(
-              child: AspectRatio(
-                aspectRatio: 1.0,
-                child: RepaintBoundary(
-                  key: _repaintKey,
-                  child: Draw(
-                    strokes: _strokes,
-                    strokeColor: _selectedColor,
-                    strokeWidth: _selectedWidth,
-                    backgroundColor: Colors.white,
-                    onStrokeStarted: (newStroke, currentStroke) {
-                      return currentStroke ??
-                          newStroke.copyWith(
-                            data: {#erasing: _isEraserMode},
-                          );
-                    },
-                    onStrokeDrawn: _onStrokeDrawn,
-                    strokePainter: (stroke) {
-                      if (stroke.data?[#erasing] == true) {
-                        return [eraseWithDefault(stroke)];
-                      }
-                      return [paintWithDefault(stroke)];
-                    },
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Neumorphic(
+                  style: NeumorphicStyle(
+                    depth: -4,
+                    boxShape: NeumorphicBoxShape.roundRect(
+                        BorderRadius.circular(16)),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 1.0,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: RepaintBoundary(
+                        key: _repaintKey,
+                        child: Draw(
+                          strokes: _strokes,
+                          strokeColor: _selectedColor,
+                          strokeWidth: _selectedWidth,
+                          backgroundColor: Colors.white,
+                          onStrokeStarted: (newStroke, currentStroke) {
+                            return currentStroke ??
+                                newStroke.copyWith(
+                                  data: {#erasing: _isEraserMode},
+                                );
+                          },
+                          onStrokeDrawn: _onStrokeDrawn,
+                          strokePainter: (stroke) {
+                            if (stroke.data?[#erasing] == true) {
+                              return [eraseWithDefault(stroke)];
+                            }
+                            return [paintWithDefault(stroke)];
+                          },
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-          const Divider(height: 1),
+
           // Toolbar
           SafeArea(
             top: false,
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  // Color swatches
-                  for (final color in _colors)
-                    GestureDetector(
-                      onTap: () => setState(() {
-                        _selectedColor = color;
-                        _isEraserMode = false;
-                      }),
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 10),
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: color,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: !_isEraserMode && _selectedColor == color
-                                ? theme.colorScheme.primary
-                                : Colors.grey.shade300,
-                            width:
-                                !_isEraserMode && _selectedColor == color
-                                    ? 3
-                                    : 1,
+            child: Neumorphic(
+              margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              style: NeumorphicStyle(
+                depth: 4,
+                boxShape: NeumorphicBoxShape.roundRect(
+                    BorderRadius.circular(20)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 14),
+                child: Row(
+                  children: [
+                    // Color swatches
+                    for (final color in _colors)
+                      GestureDetector(
+                        onTap: () => setState(() {
+                          _selectedColor = color;
+                          _isEraserMode = false;
+                        }),
+                        child: Neumorphic(
+                          margin: const EdgeInsets.only(right: 8),
+                          style: NeumorphicStyle(
+                            depth: !_isEraserMode && _selectedColor == color
+                                ? -3
+                                : 3,
+                            color: color == Colors.yellow
+                                ? Colors.yellow
+                                : color == Colors.black
+                                    ? const Color(0xFF212121)
+                                    : color == Colors.red
+                                        ? const Color(0xFFE53935)
+                                        : const Color(0xFF1565C0),
+                            boxShape: NeumorphicBoxShape.circle(),
+                          ),
+                          child: const SizedBox(width: 30, height: 30),
+                        ),
+                      ),
+
+                    const Spacer(),
+
+                    // Pen width toggles
+                    for (final width in _widths)
+                      GestureDetector(
+                        onTap: () => setState(() {
+                          _selectedWidth = width;
+                          _isEraserMode = false;
+                        }),
+                        child: Neumorphic(
+                          margin: const EdgeInsets.only(right: 8),
+                          style: NeumorphicStyle(
+                            depth: _selectedWidth == width && !_isEraserMode
+                                ? -3
+                                : 3,
+                            boxShape: NeumorphicBoxShape.circle(),
+                          ),
+                          child: SizedBox(
+                            width: 34,
+                            height: 34,
+                            child: Center(
+                              child: Container(
+                                width: width,
+                                height: width,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF3D3D3D),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  const Spacer(),
-                  // Pen width toggles
-                  for (final width in _widths)
+
+                    // Eraser toggle
                     GestureDetector(
                       onTap: () =>
-                          setState(() => _selectedWidth = width),
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: _selectedWidth == width
-                                ? theme.colorScheme.primary
-                                : Colors.grey.shade300,
-                            width: _selectedWidth == width ? 2 : 1,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Container(
-                          width: width,
-                          height: width,
-                          decoration: const BoxDecoration(
-                            color: Colors.black87,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                    ),
-                  // Eraser toggle
-                  GestureDetector(
-                    onTap: () =>
-                        setState(() => _isEraserMode = !_isEraserMode),
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
+                          setState(() => _isEraserMode = !_isEraserMode),
+                      child: Neumorphic(
+                        style: NeumorphicStyle(
+                          depth: _isEraserMode ? -3 : 3,
                           color: _isEraserMode
-                              ? theme.colorScheme.primary
-                              : Colors.grey.shade300,
-                          width: _isEraserMode ? 2 : 1,
+                              ? const Color(0xFFFFE0B2)
+                              : null,
+                          boxShape: NeumorphicBoxShape.circle(),
                         ),
-                        color: _isEraserMode
-                            ? theme.colorScheme.primaryContainer
-                            : null,
-                      ),
-                      child: Icon(
-                        Icons.cleaning_services_outlined,
-                        size: 20,
-                        color: _isEraserMode
-                            ? theme.colorScheme.onPrimaryContainer
-                            : null,
+                        child: SizedBox(
+                          width: 34,
+                          height: 34,
+                          child: Center(
+                            child: Icon(
+                              Icons.cleaning_services_outlined,
+                              size: 18,
+                              color: _isEraserMode
+                                  ? const Color(0xFFE65100)
+                                  : const Color(0xFF5D5D5D),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

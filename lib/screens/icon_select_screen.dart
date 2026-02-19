@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crop_your_image/crop_your_image.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../models/child.dart';
@@ -24,10 +24,22 @@ class IconSelectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final baseColor = NeumorphicTheme.baseColor(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('アイコンを選ぶ')),
+      backgroundColor: baseColor,
+      appBar: NeumorphicAppBar(
+        title: const Text(
+          'アイコンを選ぶ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Color(0xFF3D3D3D),
+          ),
+        ),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(28),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -37,7 +49,7 @@ class IconSelectScreen extends StatelessWidget {
               label: 'ギャラリーから選ぶ',
               onTap: () => _pickFromGallery(context),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             _OptionCard(
               icon: Icons.draw_outlined,
               label: '手書きで描く',
@@ -112,36 +124,46 @@ class _OptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final disabledColor = theme.colorScheme.onSurface.withValues(alpha: 0.38);
-
-    return Card(
-      elevation: enabled ? 2 : 0,
-      color: enabled
-          ? null
-          : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                size: 36,
-                color: enabled ? theme.colorScheme.primary : disabledColor,
-              ),
-              const SizedBox(width: 16),
-              Text(
-                label,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: enabled ? null : disabledColor,
+    return NeumorphicButton(
+      style: NeumorphicStyle(
+        depth: enabled ? 6 : 2,
+        boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(22)),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+      onPressed: onTap,
+      child: Row(
+        children: [
+          Neumorphic(
+            style: NeumorphicStyle(
+              depth: enabled ? 4 : 1,
+              color: enabled ? const Color(0xFFFFE0B2) : null,
+              boxShape: NeumorphicBoxShape.circle(),
+            ),
+            child: SizedBox(
+              width: 60,
+              height: 60,
+              child: Center(
+                child: Icon(
+                  icon,
+                  size: 30,
+                  color: enabled
+                      ? const Color(0xFFE65100)
+                      : const Color(0xFF8E8E8E),
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+          const SizedBox(width: 20),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              color:
+                  enabled ? const Color(0xFF3D3D3D) : const Color(0xFF8E8E8E),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -162,14 +184,39 @@ class _ImageCropScreenState extends State<_ImageCropScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final baseColor = NeumorphicTheme.baseColor(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('切り取り'),
-        actions: [
-          TextButton(
-            onPressed: _cropController.crop,
-            child: const Text('完了'),
+      backgroundColor: baseColor,
+      appBar: NeumorphicAppBar(
+        title: const Text(
+          '切り取り',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Color(0xFF3D3D3D),
           ),
+        ),
+        actions: [
+          NeumorphicButton(
+            style: NeumorphicStyle(
+              depth: 4,
+              color: const Color(0xFFFFB74D),
+              boxShape:
+                  NeumorphicBoxShape.roundRect(BorderRadius.circular(10)),
+            ),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            onPressed: _cropController.crop,
+            child: const Text(
+              '完了',
+              style: TextStyle(
+                color: Color(0xFF7B4F00),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Crop(

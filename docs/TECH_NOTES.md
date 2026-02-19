@@ -12,13 +12,113 @@
 | path_provider | アプリドキュメントディレクトリのパス取得 | 1 |
 | uuid | UUID 生成（Child・Transaction の id） | 1 |
 | intl | 日付・金額フォーマット（日本語ロケール） | 1 |
+| flutter_neumorphic_plus | ニューモーフィック UI キット（全画面デザイン統一） | 1 |
 | crop_your_image | 選択画像の正方形クロップ | 2 |
 | draw_your_image | 手書きキャンバス | 2 |
 | fl_chart | 残高推移の折れ線グラフ | 2 |
 
 ---
 
-## 2. アーキテクチャ・状態管理
+## 2. UI デザイン（flutter_neumorphic_plus）
+
+### 2.1 概要
+
+全画面・全ウィジェットを `flutter_neumorphic_plus` で統一。`MaterialApp` を `NeumorphicApp` に置き換え、Material の Scaffold/Navigator はそのまま使用する。
+
+### 2.2 テーマ設定
+
+```dart
+NeumorphicApp(
+  theme: NeumorphicThemeData(
+    baseColor: Color(0xFFE8ECF0),  // 柔らかいグレー背景
+    lightSource: LightSource.topLeft,
+    depth: 8,
+    intensity: 0.7,
+  ),
+)
+```
+
+### 2.3 カラーパレット
+
+| 用途 | カラー |
+|---|---|
+| 背景（baseColor） | `Color(0xFFE8ECF0)` |
+| 主要アクション（保存・確定） | `Color(0xFFFFB74D)` アンバー |
+| 入金ボタン | `Color(0xFFA5D6A7)` ライトグリーン |
+| 出金ボタン | `Color(0xFFFFCDD2)` ライトレッド |
+| アバター背景 | `Color(0xFFFFCC80)` ライトオレンジ |
+| 入金金額テキスト | `Color(0xFF2E7D32)` ダークグリーン |
+| 出金金額テキスト | `Color(0xFFE53935)` ダークレッド |
+| 利息アイコン背景 | `Color(0xFFFFE0B2)` ライトアンバー |
+
+### 2.4 主要ウィジェット使用パターン
+
+**カード（浮き出し）:**
+```dart
+Neumorphic(
+  style: NeumorphicStyle(
+    depth: 6,
+    boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(22)),
+  ),
+  child: ...,
+)
+```
+
+**テキストフィールド（凹み）:**
+```dart
+Neumorphic(
+  style: NeumorphicStyle(
+    depth: -4,
+    boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(14)),
+  ),
+  child: TextFormField(decoration: InputDecoration(border: InputBorder.none, ...)),
+)
+```
+
+**アバター（円形）:**
+```dart
+Neumorphic(
+  style: NeumorphicStyle(
+    depth: 4,
+    boxShape: NeumorphicBoxShape.circle(),
+    color: Color(0xFFFFCC80),
+  ),
+  child: SizedBox(width: size, height: size, child: ...),
+)
+```
+
+**ボタン:**
+```dart
+NeumorphicButton(
+  style: NeumorphicStyle(
+    depth: 4,
+    color: Color(0xFFFFB74D),
+    boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(16)),
+  ),
+  onPressed: ...,
+  child: ...,
+)
+```
+
+**ダイアログ（カスタム）:**
+```dart
+Dialog(
+  backgroundColor: Colors.transparent,
+  elevation: 0,
+  child: Neumorphic(
+    style: NeumorphicStyle(depth: 10, boxShape: ...),
+    child: ...,
+  ),
+)
+```
+
+### 2.5 各画面の背景色
+
+すべての `Scaffold` に `backgroundColor: NeumorphicTheme.baseColor(context)` を設定し、ニューモーフィックの統一感を保つ。
+
+---
+
+## 3. アーキテクチャ・状態管理
 
 ### 2.1 状態管理方針
 

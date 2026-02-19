@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'db/sqlite_repository.dart';
@@ -18,16 +18,16 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppDataScope(
       repository: SqliteRepository(),
-      child: MaterialApp(
+      child: const NeumorphicApp(
         title: 'こどもぎんこう',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFFFF8C00), // warm orange
-            brightness: Brightness.light,
-          ),
+        themeMode: ThemeMode.light,
+        theme: NeumorphicThemeData(
+          baseColor: Color(0xFFE8ECF0),
+          lightSource: LightSource.topLeft,
+          depth: 8,
+          intensity: 0.7,
         ),
-        home: const HomeScreen(),
+        home: HomeScreen(),
       ),
     );
   }

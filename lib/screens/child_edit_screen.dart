@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/child.dart';
@@ -108,8 +109,59 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
     if (mounted) Navigator.of(context).pop();
   }
 
+  Widget _buildNeumorphicField({
+    required TextEditingController controller,
+    required String label,
+    String? suffix,
+    TextInputType? keyboardType,
+    TextInputAction? textInputAction,
+    List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
+    void Function(String)? onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF8E8E8E),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Neumorphic(
+          style: NeumorphicStyle(
+            depth: -4,
+            boxShape:
+                NeumorphicBoxShape.roundRect(BorderRadius.circular(14)),
+          ),
+          child: TextFormField(
+            controller: controller,
+            keyboardType: keyboardType,
+            textInputAction: textInputAction,
+            inputFormatters: inputFormatters,
+            onChanged: onChanged,
+            validator: validator,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+              suffixText: suffix,
+              suffixStyle: const TextStyle(color: Color(0xFF8E8E8E)),
+            ),
+            style: const TextStyle(fontSize: 16, color: Color(0xFF3D3D3D)),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final baseColor = NeumorphicTheme.baseColor(context);
+
     // Build a preview child reflecting the current name and icon selections.
     final previewName = _nameController.text.trim();
     final previewChild = Child(
@@ -123,11 +175,19 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEditing ? '子どもを編集' : '子どもを追加'),
+      backgroundColor: baseColor,
+      appBar: NeumorphicAppBar(
+        title: Text(
+          _isEditing ? '子どもを編集' : '子どもを追加',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Color(0xFF3D3D3D),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(28),
         child: Form(
           key: _formKey,
           child: Column(
@@ -140,33 +200,33 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
                   child: Stack(
                     alignment: Alignment.bottomRight,
                     children: [
-                      AvatarWidget(child: previewChild, radius: 48),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          shape: BoxShape.circle,
+                      AvatarWidget(child: previewChild, radius: 52),
+                      Neumorphic(
+                        style: NeumorphicStyle(
+                          depth: 4,
+                          color: const Color(0xFFFFB74D),
+                          boxShape: NeumorphicBoxShape.circle(),
                         ),
-                        padding: const EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.edit,
-                          size: 16,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                        child: const Padding(
+                          padding: EdgeInsets.all(7),
+                          child: Icon(
+                            Icons.edit,
+                            size: 16,
+                            color: Color(0xFF7B4F00),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
 
               // Name field
-              TextFormField(
+              _buildNeumorphicField(
                 controller: _nameController,
+                label: '名前',
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: '名前',
-                  border: OutlineInputBorder(),
-                ),
                 onChanged: (_) => setState(() {}), // refresh avatar preview
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -175,19 +235,16 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
 
               // Interest rate field
-              TextFormField(
+              _buildNeumorphicField(
                 controller: _rateController,
+                label: '年利',
+                suffix: '%',
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
                 textInputAction: TextInputAction.done,
-                decoration: const InputDecoration(
-                  labelText: '年利',
-                  border: OutlineInputBorder(),
-                  suffixText: '%',
-                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) return '利率を入力してください';
                   final n = double.tryParse(value);
@@ -195,18 +252,39 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
 
               // Save button
-              FilledButton(
+              NeumorphicButton(
+                style: NeumorphicStyle(
+                  depth: 5,
+                  color: const Color(0xFFFFB74D),
+                  boxShape:
+                      NeumorphicBoxShape.roundRect(BorderRadius.circular(16)),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 onPressed: _isSaving ? null : _save,
-                child: _isSaving
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(_isEditing ? '保存' : '追加する'),
+                child: Center(
+                  child: _isSaving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(
+                              Color(0xFF7B4F00),
+                            ),
+                          ),
+                        )
+                      : Text(
+                          _isEditing ? '保存' : '追加する',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF7B4F00),
+                          ),
+                        ),
+                ),
               ),
             ],
           ),
