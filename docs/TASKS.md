@@ -12,9 +12,9 @@
 
 | # | タスク | 詳細 |
 |---|---|---|
-| T01-1 | ⬜ pubspec.yaml にパッケージ追加 | `sqflite`, `path_provider`, `uuid`, `intl` を dependencies に追加 |
-| T01-2 | ⬜ 依存関係を解決 | `fvm flutter pub get` |
-| T01-3 | ⬜ フォルダ構成を作成 | `lib/models/`, `lib/screens/`, `lib/widgets/`, `lib/db/` を作成 |
+| T01-1 | ✅ pubspec.yaml にパッケージ追加 | `sqflite`, `path_provider`, `uuid`, `intl` を dependencies に追加 |
+| T01-2 | ✅ 依存関係を解決 | `fvm flutter pub get` |
+| T01-3 | ✅ フォルダ構成を作成 | `lib/models/`, `lib/screens/`, `lib/widgets/`, `lib/db/`, `lib/services/` を作成 |
 
 ---
 
