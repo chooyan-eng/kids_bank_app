@@ -19,6 +19,31 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('こどもぎんこう'),
         centerTitle: true,
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value == 'add_child') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ChildEditScreen()),
+                );
+              }
+            },
+            itemBuilder: (_) => const [
+              PopupMenuItem(
+                value: 'add_child',
+                child: Row(
+                  children: [
+                    Icon(Icons.person_add_outlined),
+                    SizedBox(width: 12),
+                    Text('子どもを追加'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       body: children.isEmpty
           ? Center(
@@ -80,13 +105,6 @@ class HomeScreen extends StatelessWidget {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const ChildEditScreen()),
-        ),
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }
