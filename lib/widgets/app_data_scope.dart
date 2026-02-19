@@ -30,8 +30,17 @@ class AppDataScope extends StatefulWidget {
 }
 
 class AppDataScopeState extends State<AppDataScope> {
-  List<Child> children = [];
-  Map<String, List<Transaction>> transactions = {};
+  List<Child> _children = [];
+  final Map<String, List<Transaction>> _transactions = {};
+
+  /// Read-only view of the registered children.
+  List<Child> get children => List.unmodifiable(_children);
+
+  /// Read-only view of cached transactions, keyed by child ID.
+  Map<String, List<Transaction>> get transactions =>
+      Map.unmodifiable(_transactions.map(
+        (k, v) => MapEntry(k, List.unmodifiable(v)),
+      ));
 
   static const _uuid = Uuid();
 
@@ -46,7 +55,7 @@ class AppDataScopeState extends State<AppDataScope> {
   Future<void> _loadChildren() async {
     final loaded = await widget.repository.loadChildren();
     setState(() {
-      children = List.of(loaded);
+      _children = List.of(loaded);
     });
   }
 
@@ -66,7 +75,7 @@ class AppDataScopeState extends State<AppDataScope> {
     await widget.repository.deleteChild(childId);
     await _loadChildren();
     setState(() {
-      transactions.remove(childId);
+      _transactions.remove(childId);
     });
   }
 
@@ -88,14 +97,14 @@ class AppDataScopeState extends State<AppDataScope> {
     await _loadChildren();
 
     // Reload transactions only if they were already cached for this child.
-    if (transactions.containsKey(transaction.childId)) {
+    if (_transactions.containsKey(transaction.childId)) {
       await _reloadTransactionsFor(transaction.childId);
     }
   }
 
   /// Loads transactions for [childId] from the repository if not yet cached.
   Future<void> loadTransactionsFor(String childId) async {
-    if (transactions.containsKey(childId)) return;
+    if (_transactions.containsKey(childId)) return;
     await _reloadTransactionsFor(childId);
   }
 
@@ -103,7 +112,7 @@ class AppDataScopeState extends State<AppDataScope> {
   Future<void> _reloadTransactionsFor(String childId) async {
     final loaded = await widget.repository.loadTransactions(childId);
     setState(() {
-      transactions[childId] = List.of(loaded);
+      _transactions[childId] = List.of(loaded);
     });
   }
 
