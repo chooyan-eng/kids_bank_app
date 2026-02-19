@@ -10,6 +10,7 @@ const _kBase = Color(0xFFE8E0D5);
 const _kTextDark = Color(0xFF4A3828);
 const _kTextMid = Color(0xFF9E8A78);
 const _kAccent = Color(0xFF8B7355);
+const _kRed = Color(0xFFE07A5F);
 
 /// S03: Child add / edit screen.
 /// Pass [child] to edit an existing child; omit it to create a new one.
@@ -109,6 +110,104 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
     }
 
     if (mounted) Navigator.of(context).pop();
+  }
+
+  Future<void> _showDeleteDialog() async {
+    final child = widget.child!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: _kBase,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Neumorphic(
+                style: NeumorphicStyle(
+                  boxShape: NeumorphicBoxShape.circle(),
+                  depth: 4,
+                  color: _kRed.withValues(alpha: 0.15),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Icon(
+                    Icons.warning_amber_rounded,
+                    color: _kRed,
+                    size: 32,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                '削除の確認',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: _kTextDark,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '「${child.name}」のデータをすべて削除しますか？',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: _kTextMid, fontSize: 14),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: NeumorphicButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      style: NeumorphicStyle(
+                        depth: 4,
+                        boxShape: NeumorphicBoxShape.roundRect(
+                          BorderRadius.circular(12),
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: const Text(
+                        'キャンセル',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: _kTextMid),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: NeumorphicButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      style: NeumorphicStyle(
+                        depth: 4,
+                        color: _kRed,
+                        boxShape: NeumorphicBoxShape.roundRect(
+                          BorderRadius.circular(12),
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: const Text(
+                        '削除',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await AppDataScope.of(context).deleteChild(child.id);
+      if (mounted) Navigator.of(context).pop('deleted');
+    }
   }
 
   @override
@@ -227,6 +326,36 @@ class _ChildEditScreenState extends State<ChildEditScreen> {
                         ),
                       ),
               ),
+
+              // Delete button — editing only
+              if (_isEditing) ...[
+                const SizedBox(height: 48),
+                NeumorphicButton(
+                  onPressed: _showDeleteDialog,
+                  style: NeumorphicStyle(
+                    disableDepth: true,
+                    boxShape: NeumorphicBoxShape.roundRect(
+                      BorderRadius.circular(12),
+                    ),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.delete_outline, size: 16, color: _kRed),
+                      SizedBox(width: 6),
+                      Text(
+                        'このユーザーを削除',
+                        style: TextStyle(
+                          color: _kRed,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
             ],
           ),
         ),

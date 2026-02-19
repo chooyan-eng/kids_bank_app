@@ -46,99 +46,6 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
     );
   }
 
-  Future<void> _showDeleteDialog(Child child) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: _kBase,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Neumorphic(
-                style: NeumorphicStyle(
-                  boxShape: NeumorphicBoxShape.circle(),
-                  depth: 4,
-                  color: _kRed.withValues(alpha: 0.15),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(16),
-                  child:
-                      Icon(Icons.warning_amber_rounded, color: _kRed, size: 32),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                '削除の確認',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: _kTextDark,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                '「${child.name}」のデータをすべて削除しますか？',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: _kTextMid, fontSize: 14),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: NeumorphicButton(
-                      onPressed: () => Navigator.pop(ctx, false),
-                      style: NeumorphicStyle(
-                        depth: 4,
-                        boxShape: NeumorphicBoxShape.roundRect(
-                          BorderRadius.circular(12),
-                        ),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: const Text(
-                        'キャンセル',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: _kTextMid),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: NeumorphicButton(
-                      onPressed: () => Navigator.pop(ctx, true),
-                      style: NeumorphicStyle(
-                        depth: 4,
-                        color: _kRed,
-                        boxShape: NeumorphicBoxShape.roundRect(
-                          BorderRadius.circular(12),
-                        ),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: const Text(
-                        '削除',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    if (confirmed == true && mounted) {
-      await AppDataScope.of(context).deleteChild(child.id);
-      if (mounted) Navigator.of(context).pop();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,33 +80,25 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
       appBar: NeumorphicAppBar(
         title: Text(child.name),
         actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) async {
-              if (value == 'edit') {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChildEditScreen(child: child),
-                  ),
-                );
-              } else if (value == 'delete') {
-                await _showDeleteDialog(child);
+          NeumorphicButton(
+            onPressed: () async {
+              final navigator = Navigator.of(context);
+              final result = await Navigator.push<String>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChildEditScreen(child: child),
+                ),
+              );
+              if (result == 'deleted' && mounted) {
+                navigator.pop();
               }
             },
-            color: _kBase,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            icon: const Icon(Icons.more_vert, color: _kTextDark),
-            itemBuilder: (_) => [
-              const PopupMenuItem(
-                value: 'edit',
-                child: Text('編集', style: TextStyle(color: _kTextDark)),
-              ),
-              const PopupMenuItem(
-                value: 'delete',
-                child: Text('削除', style: TextStyle(color: _kRed)),
-              ),
-            ],
+            style: NeumorphicStyle(
+              boxShape: NeumorphicBoxShape.circle(),
+              depth: 4,
+            ),
+            padding: const EdgeInsets.all(8),
+            child: const Icon(Icons.edit_outlined, size: 20, color: _kTextDark),
           ),
           const SizedBox(width: 8),
         ],
