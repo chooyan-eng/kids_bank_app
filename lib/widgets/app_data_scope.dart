@@ -54,26 +54,18 @@ class AppDataScopeState extends State<AppDataScope> {
 
   Future<void> addChild(Child child) async {
     await widget.repository.saveChild(child);
-    setState(() {
-      children = [...children, child];
-      transactions.putIfAbsent(child.id, () => []);
-    });
+    await _loadChildren();
   }
 
   Future<void> updateChild(Child child) async {
     await widget.repository.updateChild(child);
-    setState(() {
-      children = [
-        for (final c in children)
-          if (c.id == child.id) child else c,
-      ];
-    });
+    await _loadChildren();
   }
 
   Future<void> deleteChild(String childId) async {
     await widget.repository.deleteChild(childId);
+    await _loadChildren();
     setState(() {
-      children = children.where((c) => c.id != childId).toList();
       transactions.remove(childId);
     });
   }
@@ -81,8 +73,8 @@ class AppDataScopeState extends State<AppDataScope> {
   // -------------------------------------------------- transaction operations
 
   /// Saves the transaction, updates the child balance (and
-  /// [Child.lastInterestAppliedAt] for interest transactions), and refreshes
-  /// in-memory state.
+  /// [Child.lastInterestAppliedAt] for interest transactions), then reloads
+  /// children and — if already cached — transactions from the repository.
   Future<void> addTransaction(Transaction transaction) async {
     final isInterest = transaction.type == TransactionType.interest;
 
@@ -93,33 +85,22 @@ class AppDataScopeState extends State<AppDataScope> {
       lastInterestAppliedAt: isInterest ? transaction.date : null,
     );
 
-    setState(() {
-      // Append to in-memory transaction list (only if already loaded).
-      final txList = transactions[transaction.childId];
-      if (txList != null) {
-        transactions[transaction.childId] = [...txList, transaction];
-      }
+    await _loadChildren();
 
-      // Update the matching child.
-      children = [
-        for (final c in children)
-          if (c.id == transaction.childId)
-            isInterest
-                ? c.copyWith(
-                    balance: transaction.balanceAfter,
-                    lastInterestAppliedAt: transaction.date,
-                  )
-                : c.copyWith(balance: transaction.balanceAfter)
-          else
-            c,
-      ];
-    });
+    // Reload transactions only if they were already cached for this child.
+    if (transactions.containsKey(transaction.childId)) {
+      await _reloadTransactionsFor(transaction.childId);
+    }
   }
 
   /// Loads transactions for [childId] from the repository if not yet cached.
   Future<void> loadTransactionsFor(String childId) async {
     if (transactions.containsKey(childId)) return;
+    await _reloadTransactionsFor(childId);
+  }
 
+  /// Always reloads transactions for [childId] from the repository.
+  Future<void> _reloadTransactionsFor(String childId) async {
     final loaded = await widget.repository.loadTransactions(childId);
     setState(() {
       transactions[childId] = List.of(loaded);
