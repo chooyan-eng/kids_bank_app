@@ -66,6 +66,9 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
       final bytes = byteData.buffer.asUint8List();
       final filePath = await _savePng(bytes);
 
+      // Evict the old cached image so the updated file is reloaded on next display.
+      imageCache.evict(FileImage(File(filePath)));
+
       if (mounted) Navigator.of(context).pop(filePath);
     } finally {
       if (mounted) setState(() => _isSaving = false);
