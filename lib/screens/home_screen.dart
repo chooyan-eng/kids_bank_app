@@ -20,15 +20,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_didCheckInterest) {
-      final scope = AppDataScope.of(context);
-      final children = scope.children;
-      if (children.isNotEmpty) {
-        _didCheckInterest = true;
-        for (final child in children) {
-          scope.checkAndApplyInterest(child);
-        }
+    final scope = AppDataScope.of(context);
+    final children = scope.children;
+    if (!_didCheckInterest && children.isNotEmpty) {
+      _didCheckInterest = true;
+      for (final child in children) {
+        scope.checkAndApplyInterest(child);
       }
+    }
+    // Load recent transactions for all children so ChildCard can display them.
+    for (final child in children) {
+      scope.loadTransactionsFor(child.id);
     }
   }
 
@@ -74,8 +76,10 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: children.length,
               itemBuilder: (context, index) {
                 final child = children[index];
+                final txList = scope.transactions[child.id] ?? const [];
                 return ChildCard(
                   child: child,
+                  recentTransactions: txList,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
