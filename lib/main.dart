@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'db/dummy_repository.dart';
+import 'db/sqlite_repository.dart';
 import 'screens/home_screen.dart';
 import 'widgets/app_data_scope.dart';
 
@@ -17,7 +17,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppDataScope(
-      repository: DummyRepository(),
+      repository: SqliteRepository(),
       child: MaterialApp(
         title: 'こどもぎんこう',
         theme: ThemeData(
