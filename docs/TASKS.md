@@ -1,6 +1,6 @@
 # TASKS.md — こどもぎんこう タスク一覧
 
-最終更新: 2026-02-19（T10 完了マーク更新）
+最終更新: 2026-02-19（P2-T02 完了マーク更新）
 
 凡例: ⬜ 未着手 / 🔄 作業中 / ✅ 完了
 
@@ -173,16 +173,16 @@ abstract class AppRepository {
 
 | # | タスク | 詳細 |
 |---|---|---|
-| P2-T02-1 | ⬜ pubspec に `draw_your_image` を追加 | `fvm flutter pub get` |
-| P2-T02-2 | ⬜ `lib/screens/drawing_canvas_screen.dart` を作成 | 以下の UI を実装（詳細は下記） |
-| P2-T02-3 | ⬜ キャンバス本体 | `draw_your_image` の描画ウィジェットを正方形（画面幅いっぱい）で配置 |
-| P2-T02-4 | ⬜ ペン色セレクタ | 黒・赤・青・黄の 4 色をトグルボタンで切り替え |
-| P2-T02-5 | ⬜ ペン太さセレクタ | 細（2px）・中（5px）・太（10px）の 3 段階をスライダーまたはトグルで切り替え |
-| P2-T02-6 | ⬜ 消しゴムモード | 消しゴムボタンで ON/OFF 切り替え。ON 時はペンカラーを背景色に変えて描画 |
-| P2-T02-7 | ⬜ Undo ボタン | `draw_your_image` の undo API を呼び出す |
-| P2-T02-8 | ⬜ 完了ボタン | キャンバス → `toImage()` → PNG エンコード → `<appDocDir>/icons/<childId>.png` に保存 |
-| P2-T02-9 | ⬜ `icon_select_screen.dart` に「手書き」フローを繋ぐ | タップ → `DrawingCanvasScreen` へ遷移。戻り値（保存パス）を受け取って Child を更新 |
-| P2-T02-10 | ⬜ Child を更新して DB に反映 | `iconType: drawing`・`iconImagePath: <保存パス>` を `updateChild()` で保存 |
+| P2-T02-1 | ✅ pubspec に `draw_your_image` を追加 | `fvm flutter pub get` |
+| P2-T02-2 | ✅ `lib/screens/drawing_canvas_screen.dart` を作成 | 以下の UI を実装（詳細は下記） |
+| P2-T02-3 | ✅ キャンバス本体 | `draw_your_image` の描画ウィジェットを正方形（画面幅いっぱい）で配置 |
+| P2-T02-4 | ✅ ペン色セレクタ | 黒・赤・青・黄の 4 色をトグルボタンで切り替え |
+| P2-T02-5 | ✅ ペン太さセレクタ | 細（2px）・中（5px）・太（10px）の 3 段階をスライダーまたはトグルで切り替え |
+| P2-T02-6 | ✅ 消しゴムモード | 消しゴムボタンで ON/OFF 切り替え。`eraseWithDefault()` でピクセル消去 |
+| P2-T02-7 | ✅ Undo ボタン | ストロークリストのスナップショットスタックで Undo を実装 |
+| P2-T02-8 | ✅ 完了ボタン | `RepaintBoundary.toImage()` → PNG エンコード → `<appDocDir>/icons/<childId>.png` に保存 |
+| P2-T02-9 | ✅ `icon_select_screen.dart` に「手書き」フローを繋ぐ | タップ → `DrawingCanvasScreen` へ遷移。戻り値（保存パス）を `IconSelectResult` レコードで返す |
+| P2-T02-10 | ✅ Child を更新して DB に反映 | `iconType: drawing`・`iconImagePath: <保存パス>` を `updateChild()` で保存 |
 | P2-T02-11 | ⬜ 動作確認 | 描画 → 完了 → ホーム画面のカードに手書きアイコンが表示されることを確認 |
 
 > **備考**: `avatar_widget.dart` の画像表示分岐は P2-T01-8 で実装済みのため流用。
