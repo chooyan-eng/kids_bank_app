@@ -7,8 +7,32 @@ import 'child_detail_screen.dart';
 import 'child_edit_screen.dart';
 
 /// S01: Home screen — shows all children's balance cards.
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  /// Tracks whether the startup interest check has already been performed.
+  bool _didCheckInterest = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Run once: when children are first available after async load, check interest for all.
+    if (!_didCheckInterest) {
+      final scope = AppDataScope.of(context);
+      final children = scope.children;
+      if (children.isNotEmpty) {
+        _didCheckInterest = true;
+        for (final child in children) {
+          scope.checkAndApplyInterest(child);
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
