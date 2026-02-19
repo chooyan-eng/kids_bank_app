@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 
 import '../widgets/app_data_scope.dart';
 import '../widgets/child_card.dart';
@@ -15,13 +15,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  /// Tracks whether the startup interest check has already been performed.
   bool _didCheckInterest = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Run once: when children are first available after async load, check interest for all.
     if (!_didCheckInterest) {
       final scope = AppDataScope.of(context);
       final children = scope.children;
@@ -40,63 +38,35 @@ class _HomeScreenState extends State<HomeScreen> {
     final children = scope.children;
 
     return Scaffold(
-      appBar: AppBar(
+      backgroundColor: NeumorphicTheme.baseColor(context),
+      appBar: NeumorphicAppBar(
         title: const Text('こどもぎんこう'),
         centerTitle: true,
         actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) {
-              if (value == 'add_child') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ChildEditScreen()),
-                );
-              }
-            },
-            itemBuilder: (_) => const [
-              PopupMenuItem(
-                value: 'add_child',
-                child: Row(
-                  children: [
-                    Icon(Icons.person_add_outlined),
-                    SizedBox(width: 12),
-                    Text('子どもを追加'),
-                  ],
-                ),
-              ),
-            ],
+          NeumorphicButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ChildEditScreen()),
+            ),
+            style: NeumorphicStyle(
+              boxShape: NeumorphicBoxShape.circle(),
+              depth: 4,
+            ),
+            padding: const EdgeInsets.all(8),
+            child: const Icon(
+              Icons.person_add_outlined,
+              size: 20,
+              color: Color(0xFF4A3828),
+            ),
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: children.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.child_care,
-                    size: 80,
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    '最初の子どもを追加しよう！',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton.icon(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const ChildEditScreen()),
-                    ),
-                    icon: const Icon(Icons.add),
-                    label: const Text('追加する'),
-                  ),
-                ],
+          ? _EmptyState(
+              onAdd: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ChildEditScreen()),
               ),
             )
           : ListView.builder(
@@ -129,6 +99,72 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  final VoidCallback onAdd;
+
+  const _EmptyState({required this.onAdd});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Neumorphic(
+            style: NeumorphicStyle(
+              boxShape: NeumorphicBoxShape.circle(),
+              depth: 6,
+            ),
+            child: const Padding(
+              padding: EdgeInsets.all(28),
+              child: Icon(
+                Icons.child_care,
+                size: 56,
+                color: Color(0xFF9E8A78),
+              ),
+            ),
+          ),
+          const SizedBox(height: 28),
+          const Text(
+            '最初の子どもを追加しよう！',
+            style: TextStyle(
+              fontSize: 16,
+              color: Color(0xFF9E8A78),
+            ),
+          ),
+          const SizedBox(height: 24),
+          NeumorphicButton(
+            onPressed: onAdd,
+            style: NeumorphicStyle(
+              depth: 6,
+              color: const Color(0xFF8B7355),
+              boxShape: NeumorphicBoxShape.roundRect(
+                BorderRadius.circular(24),
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.add, color: Colors.white, size: 18),
+                SizedBox(width: 6),
+                Text(
+                  '追加する',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

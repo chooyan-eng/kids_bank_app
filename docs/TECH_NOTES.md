@@ -1,6 +1,6 @@
 # TECH_NOTES.md — こどもぎんこう 技術仕様メモ
 
-最終更新: 2026-02-19
+最終更新: 2026-02-20
 
 ---
 
@@ -12,6 +12,7 @@
 | path_provider | アプリドキュメントディレクトリのパス取得 | 1 |
 | uuid | UUID 生成（Child・Transaction の id） | 1 |
 | intl | 日付・金額フォーマット（日本語ロケール） | 1 |
+| flutter_neumorphic_plus | ニューモーフィック UI キット（`NeumorphicApp`・`Neumorphic`・`NeumorphicButton` 等） | 1 |
 | crop_your_image | 選択画像の正方形クロップ | 2 |
 | draw_your_image | 手書きキャンバス | 2 |
 | fl_chart | 残高推移の折れ線グラフ | 2 |
@@ -66,7 +67,49 @@ lib/
   main.dart
 ```
 
-### 2.3 ルーティング
+### 2.3 UI テーマ（ニューモーフィック）
+
+`flutter_neumorphic_plus` を使い、アプリ全体をニューモーフィックデザインで統一している。
+
+**エントリーポイント:**
+```dart
+// main.dart
+NeumorphicApp(
+  theme: NeumorphicThemeData(
+    baseColor: Color(0xFFE8E0D5),   // ウォームクリーム
+    lightSource: LightSource.topLeft,
+    depth: 8,
+    intensity: 0.7,
+    accentColor: Color(0xFFE89B41), // アンバーオレンジ
+    defaultTextColor: Color(0xFF4A3828),
+  ),
+)
+```
+
+**カラーパレット:**
+
+| 定数 | 値 | 用途 |
+|---|---|---|
+| `_kBase` | `#E8E0D5` | 背景・ニューモーフィック基準色 |
+| `_kAccent` | `#8B7355` | 主要アクション・ハイライト（ウォームブラウン） |
+| `_kGreen` | `#6AAF8B` | 入金ボタン |
+| `_kRed` | `#E07A5F` | 出金ボタン・削除 |
+| `_kTextDark` | `#4A3828` | 主テキスト |
+| `_kTextMid` | `#9E8A78` | 補助テキスト |
+
+**主要パターン:**
+- **Scaffold 背景**: `NeumorphicTheme.baseColor(context)` または `_kBase` 定数
+- **AppBar**: `NeumorphicAppBar`（Scaffold.appBar に指定）
+- **カード**: `Neumorphic(style: NeumorphicStyle(depth: 6, boxShape: NeumorphicBoxShape.roundRect(...)))`
+- **ボタン**: `NeumorphicButton`（`depth: 4–6`、カラーボタンは `color:` を指定）
+- **テキスト入力**: 凹型 `Neumorphic(depth: -3 or -4)` の中に `TextFormField(border: InputBorder.none)`
+- **円形アバター**: `Neumorphic(boxShape: NeumorphicBoxShape.circle())`
+- **凹型表示域（残高表示など）**: `depth: -4 or -5`（インデント効果）
+
+**インポート:**
+全 UI ファイルで `flutter/material.dart` を `flutter_neumorphic_plus/flutter_neumorphic.dart` に置き換える（neumorphic は material を再エクスポートするため）。
+
+### 2.4 ルーティング
 
 **`Navigator push/pop`**（標準 API）を採用する。外部パッケージは使用しない。
 

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 
 import '../models/child.dart';
 
@@ -15,29 +15,44 @@ class AvatarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     if (child.iconImagePath != null) {
       final file = File(child.iconImagePath!);
       if (file.existsSync()) {
-        return CircleAvatar(
-          radius: radius,
-          backgroundImage: FileImage(file),
-          backgroundColor: theme.colorScheme.primaryContainer,
+        return Neumorphic(
+          style: NeumorphicStyle(
+            depth: -4,
+            boxShape: NeumorphicBoxShape.circle(),
+          ),
+          child: ClipOval(
+            child: SizedBox(
+              width: radius * 2,
+              height: radius * 2,
+              child: Image.file(file, fit: BoxFit.cover),
+            ),
+          ),
         );
       }
     }
 
     final initial = child.name.isNotEmpty ? child.name[0] : '?';
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: theme.colorScheme.primaryContainer,
-      child: Text(
-        initial,
-        style: TextStyle(
-          fontSize: radius * 0.8,
-          fontWeight: FontWeight.bold,
-          color: theme.colorScheme.onPrimaryContainer,
+    return Neumorphic(
+      style: NeumorphicStyle(
+        depth: 4,
+        boxShape: NeumorphicBoxShape.circle(),
+        color: const Color(0xFFDDD4C8),
+      ),
+      child: SizedBox(
+        width: radius * 2,
+        height: radius * 2,
+        child: Center(
+          child: Text(
+            initial,
+            style: TextStyle(
+              fontSize: radius * 0.8,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF8B7355),
+            ),
+          ),
         ),
       ),
     );

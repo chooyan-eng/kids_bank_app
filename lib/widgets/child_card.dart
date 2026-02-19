@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:intl/intl.dart';
 
 import '../models/child.dart';
@@ -26,64 +26,114 @@ class ChildCard extends StatelessWidget {
       symbol: '¥',
       decimalDigits: 0,
     );
-    final theme = Theme.of(context);
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      onTap: onTap,
+      child: Neumorphic(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        style: NeumorphicStyle(
+          depth: 6,
+          boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(20)),
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   AvatarWidget(child: child),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           child.name,
-                          style: theme.textTheme.titleMedium?.copyWith(
+                          style: const TextStyle(
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: Color(0xFF4A3828),
                           ),
                         ),
                         Text(
                           '年利 ${child.interestRatePercent}%',
-                          style: theme.textTheme.bodySmall,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF9E8A78),
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Text(
                     yenFormat.format(child.balance),
-                    style: theme.textTheme.headlineSmall?.copyWith(
+                    style: TextStyle(
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: child.balance >= 0
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.error,
+                          ? const Color(0xFF8B7355)
+                          : const Color(0xFFE07A5F),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  FilledButton.icon(
+                  NeumorphicButton(
                     onPressed: onDeposit,
-                    icon: const Icon(Icons.add),
-                    label: const Text('入金'),
+                    style: NeumorphicStyle(
+                      color: const Color(0xFF6AAF8B),
+                      depth: 4,
+                      boxShape: NeumorphicBoxShape.roundRect(
+                        BorderRadius.circular(12),
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add, size: 16, color: Colors.white),
+                        SizedBox(width: 4),
+                        Text(
+                          '入金',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  OutlinedButton.icon(
+                  const SizedBox(width: 10),
+                  NeumorphicButton(
                     onPressed: onWithdrawal,
-                    icon: const Icon(Icons.remove),
-                    label: const Text('出金'),
+                    style: NeumorphicStyle(
+                      color: const Color(0xFFE07A5F),
+                      depth: 4,
+                      boxShape: NeumorphicBoxShape.roundRect(
+                        BorderRadius.circular(12),
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.remove, size: 16, color: Colors.white),
+                        SizedBox(width: 4),
+                        Text(
+                          '出金',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
